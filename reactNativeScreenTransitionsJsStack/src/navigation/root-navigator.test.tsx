@@ -8,6 +8,8 @@ type MockStackConfig = {
   [key: string]: unknown;
 };
 
+// Blank stack lifecycle depends on UI-runtime reactions that Jest cannot run.
+// Mirror its headerless, instant navigator contract here; device QA covers the real stack.
 function mockCreateBlankStackNavigator(config: MockStackConfig) {
   const { createNativeStackNavigator } = jest.requireActual<
     typeof import('@react-navigation/native-stack')
