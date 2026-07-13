@@ -40,12 +40,5 @@
     "test": "jest",
     "doctor": "npx expo-doctor"
   },
-  "private": true,
-  "reanimated": {
-    "staticFeatureFlags": {
-      "USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS": true,
-      "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": true,
-      "DISABLE_COMMIT_PAUSING_MECHANISM": true
-    }
-  }
+  "private": true
 }
