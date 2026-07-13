@@ -1,26 +1,50 @@
-# React Native Screen Transitions JavaScript Stack Test
+# `react-native-screen-transitions` iOS Performance Reproduction
 
-Minimal Expo SDK 57 app for evaluating the blank stack from `react-native-screen-transitions`.
+This project reproduces slow navigation transitions on iOS when using
+[`react-native-screen-transitions`](https://github.com/duguyihou/react-native-screen-transitions)
+with React Native Reanimated's `IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS` static feature flag enabled.
 
-## Architecture
+## Reproduce the issue
 
-- `index.ts` registers the Expo root component and loads Gesture Handler first.
-- `src/navigation/root-navigator.tsx` defines the typed static `Home` and `Red` blank-stack routes.
-- `src/screens` contains the two focused test screens.
-- `src/navigation/root-navigator.test.tsx` exercises the route wiring with a Jest-compatible, headerless, instant stack stand-in; simulator and emulator checks exercise the real blank stack.
-
-The Home button pushes a full red content screen as an immediate cut: no interpolator or transition spec is configured, and gestures are disabled. Blank stack intentionally provides no standard header or navigation chrome. Android system back and programmatic stack-pop behavior remain available.
-
-## Commands
+Install the dependencies, generate the native projects, and run the app on iOS:
 
 ```sh
 npm install
-npm start
-npm run ios
-npm run android
-npm run web
-npm run lint
-npm run typecheck
-npm test
-npm run doctor
+npx expo prebuild
+npx expo run:ios
 ```
+
+Navigate between the screens in the app. Transitions should be noticeably slow while the following Reanimated configuration is present in `package.json`:
+
+```json
+{
+  "reanimated": {
+    "staticFeatureFlags": {
+      "IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS": true
+    }
+  }
+}
+```
+
+## Verify the workaround
+
+1. Remove the `reanimated` configuration shown above from `package.json`.
+2. Delete the generated files and installed dependencies:
+
+   ```sh
+   rm -rf node_modules ios android
+   ```
+
+3. Reinstall and rebuild the app:
+
+   ```sh
+   npm install
+   npx expo prebuild
+   npx expo run:ios
+   ```
+
+Navigation transitions should now run at the expected speed.
+
+## Android behavior
+
+The equivalent Android feature flag does not appear to cause the same performance issue.
